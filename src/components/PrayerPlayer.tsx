@@ -15,7 +15,6 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [showTranscript, setShowTranscript] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -92,44 +91,22 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
         {prayer.title}
       </h1>
 
-      {/* Transcript toggle */}
-      <button
-        onClick={() => setShowTranscript(v => !v)}
-        style={{
-          background: "none",
-          border: "none",
-          color: "rgba(255,255,255,0.45)",
-          fontSize: "0.8rem",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          cursor: "pointer",
-          padding: "12px 0",
-          marginBottom: showTranscript ? "0" : "24px",
-          textDecoration: "underline",
-          textUnderlineOffset: "3px",
-        }}
-      >
-        {showTranscript ? "▲ Hide Transcript" : "▼ Read Prayer"}
-      </button>
-
       {/* Transcript */}
-      {showTranscript && (
-        <div style={{
-          color: "rgba(255,255,255,0.82)",
-          fontSize: "1.05rem",
-          lineHeight: 1.85,
-          whiteSpace: "pre-wrap",
-          marginBottom: "28px",
-          padding: "20px",
-          background: "rgba(0,0,0,0.35)",
-          borderRadius: "12px",
-          backdropFilter: "blur(8px)",
-          maxHeight: "35vh",
-          overflowY: "auto",
-        }}>
-          {prayer.content}
-        </div>
-      )}
+      <div style={{
+        color: "rgba(255,255,255,0.82)",
+        fontSize: "1.05rem",
+        lineHeight: 1.85,
+        whiteSpace: "pre-wrap",
+        marginBottom: "28px",
+        padding: "20px",
+        background: "rgba(0,0,0,0.35)",
+        borderRadius: "12px",
+        backdropFilter: "blur(8px)",
+        maxHeight: "35vh",
+        overflowY: "auto",
+      }}>
+        {prayer.content}
+      </div>
 
       {/* Audio Player */}
       {prayer.audioPath ? (
