@@ -140,7 +140,7 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
         {prayer.content.split('\n').filter(p => p.trim() !== "").map((paragraph, i) => (
         <p key={i} className="anim-p" style={{
             color: "rgba(255,255,255,0.75)",
-            fontSize: "clamp(1.5rem, 4vw, 2rem)",
+            fontSize: "clamp(0.5rem, 1vw, 2rem)",
             lineHeight: 1.25,
             marginBottom: "1.5rem",
             textShadow: "0 2px 10px rgba(0,0,0,0.9)",
