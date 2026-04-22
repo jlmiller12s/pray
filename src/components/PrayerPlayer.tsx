@@ -138,17 +138,25 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
         boxShadow: "0 12px 40px rgba(0,0,0,0.4)"
       }}>
         {prayer.content.split('\n').filter(p => p.trim() !== "").map((paragraph, i) => (
-          <p key={i} className="playfair anim-p" style={{
+        <p key={i} className="playfair anim-p" style={{
             color: "rgba(255,255,255,0.65)",
-            fontSize: "1.25rem",
+            fontSize: "1.2rem",
             lineHeight: 1.85,
             marginBottom: "1.2rem",
             textShadow: "0 2px 10px rgba(0,0,0,0.9)",
-            opacity: 0, // start invisible for GSAP
+            opacity: 0,
+            fontFamily: "var(--font-oswald), sans-serif",
+            fontWeight: 300,
+            letterSpacing: "0.04em",
+            wordSpacing: "0.15em",
           }}>
             {paragraph.split(' ').map((word, wordIndex) => (
-              <span key={wordIndex} className="hover-word">
-                {word}{" "}
+              <span
+                key={wordIndex}
+                className="hover-word"
+                style={{ whiteSpace: "pre" }}
+              >
+                {word + (wordIndex < paragraph.split(' ').length - 1 ? ' ' : '')}
               </span>
             ))}
           </p>
@@ -262,13 +270,12 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
 
       <style>{`
         .hover-word {
-          display: inline-block;
-          transition: color 0.15s ease, text-shadow 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: inline;
+          transition: color 0.15s ease, text-shadow 0.15s ease;
         }
         .hover-word:hover {
           color: #fff;
-          text-shadow: 0 0 16px rgba(255,255,255,0.8), 0 0 32px rgba(255,255,255,0.4);
-          transform: translateY(-2px) scale(1.05);
+          text-shadow: 0 0 16px rgba(255,200,100,0.9), 0 0 32px rgba(255,180,60,0.5);
           cursor: crosshair;
         }
 
