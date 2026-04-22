@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { writeFile, unlink } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+import { put, del } from "@vercel/blob";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -19,22 +17,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No audio file provided" }, { status: 400 });
   }
 
-  // Delete old audio file if replacing
-  if (oldPath) {
-    const oldFullPath = join(process.cwd(), "public", oldPath);
-    if (existsSync(oldFullPath)) {
-      await unlink(oldFullPath).catch(() => {});
-    }
+  // Delete old audio file if it is a Blob URL
+  if (oldPath && oldPath.startsWith("http")) {
+    await del(oldPath).catch(() => {});
   }
 
   const ext = file.type.includes("mp4") ? "mp4" : "webm";
   const fileName = `prayer_${Date.now()}.${ext}`;
-  const filePath = join(process.cwd(), "public", "audio", fileName);
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filePath, buffer);
+  const blob = await put(`audio/${fileName}`, file, {
+    access: 'public',
+  });
 
-  return NextResponse.json({ audioPath: `/audio/${fileName}` });
+  return NextResponse.json({ audioPath: blob.url });
 }
 
 export async function DELETE(req: NextRequest) {
@@ -44,11 +39,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   const { audioPath } = await req.json();
-  if (audioPath) {
-    const fullPath = join(process.cwd(), "public", audioPath);
-    if (existsSync(fullPath)) {
-      await unlink(fullPath).catch(() => {});
-    }
+  if (audioPath && audioPath.startsWith("http")) {
+    await del(audioPath).catch(() => {});
   }
   return NextResponse.json({ success: true });
 }

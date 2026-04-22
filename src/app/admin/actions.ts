@@ -4,9 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { join } from "path";
-import { unlink } from "fs/promises";
-import { existsSync } from "fs";
+import { del } from "@vercel/blob";
 
 async function verifyAdmin() {
   const session = await getServerSession(authOptions);
@@ -52,9 +50,8 @@ export async function deletePrayer(id: string) {
   try {
     // Fetch prayer first to clean up any associated audio file
     const prayer = await prisma.prayer.findUnique({ where: { id } });
-    if (prayer?.audioPath) {
-      const fullPath = join(process.cwd(), "public", prayer.audioPath);
-      if (existsSync(fullPath)) await unlink(fullPath).catch(() => {});
+    if (prayer?.audioPath && prayer.audioPath.startsWith("http")) {
+      await del(prayer.audioPath).catch(() => {});
     }
     await prisma.prayer.delete({ where: { id } });
     revalidatePath("/");
