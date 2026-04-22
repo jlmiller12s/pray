@@ -139,14 +139,18 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
       }}>
         {prayer.content.split('\n').filter(p => p.trim() !== "").map((paragraph, i) => (
           <p key={i} className="playfair anim-p" style={{
-            color: "rgba(255,255,255,0.9)",
+            color: "rgba(255,255,255,0.65)",
             fontSize: "1.25rem",
             lineHeight: 1.85,
             marginBottom: "1.2rem",
             textShadow: "0 2px 10px rgba(0,0,0,0.9)",
             opacity: 0, // start invisible for GSAP
           }}>
-            {paragraph}
+            {paragraph.split(' ').map((word, wordIndex) => (
+              <span key={wordIndex} className="hover-word">
+                {word}{" "}
+              </span>
+            ))}
           </p>
         ))}
       </div>
@@ -257,6 +261,17 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
       )}
 
       <style>{`
+        .hover-word {
+          display: inline-block;
+          transition: color 0.15s ease, text-shadow 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .hover-word:hover {
+          color: #fff;
+          text-shadow: 0 0 16px rgba(255,255,255,0.8), 0 0 32px rgba(255,255,255,0.4);
+          transform: translateY(-2px) scale(1.05);
+          cursor: crosshair;
+        }
+
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
           width: 14px;
