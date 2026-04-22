@@ -1,6 +1,10 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 type Prayer = {
   id: string;
@@ -15,6 +19,35 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // Title animation
+    gsap.fromTo('.anim-title', 
+      { opacity: 0, y: 30 }, 
+      { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', delay: 0.1 }
+    );
+
+    // Staggered paragraphs animation
+    gsap.fromTo('.anim-p', 
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: 'power3.out',
+        delay: 0.4
+      }
+    );
+
+    // Audio player fade in
+    gsap.fromTo('.anim-audio',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.8 }
+    );
+  }, { scope: containerRef });
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -67,51 +100,66 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div style={{ paddingBottom: "48px" }}>
+    <div ref={containerRef} style={{ paddingBottom: "48px" }}>
 
       {/* Date + Title */}
-      <p style={{
-        color: "rgba(255,255,255,0.6)",
-        fontSize: "0.8rem",
-        letterSpacing: "0.1em",
-        textTransform: "uppercase",
-        marginBottom: "12px",
-      }}>
-        {dateLabel}
-      </p>
+      <div className="anim-title">
+        <p style={{
+          color: "rgba(255,255,255,0.6)",
+          fontSize: "0.8rem",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          marginBottom: "12px",
+        }}>
+          {dateLabel}
+        </p>
 
-      <h1 className="playfair" style={{
-        fontSize: "clamp(2.2rem, 8vw, 3.2rem)",
-        fontWeight: 700,
-        lineHeight: 1.1,
-        color: "#fff",
-        marginBottom: "4px",
-        textShadow: "0 2px 20px rgba(0,0,0,0.5)",
-      }}>
-        {prayer.title}
-      </h1>
+        <h1 className="playfair" style={{
+          fontSize: "clamp(2.2rem, 8vw, 3.2rem)",
+          fontWeight: 700,
+          lineHeight: 1.1,
+          color: "#fff",
+          marginBottom: "16px",
+          textShadow: "0 2px 20px rgba(0,0,0,0.5)",
+        }}>
+          {prayer.title}
+        </h1>
+      </div>
 
       {/* Transcript */}
-      <div className="playfair" style={{
-        color: "rgba(255,255,255,0.9)",
-        fontSize: "1.25rem",
-        lineHeight: 1.85,
-        whiteSpace: "pre-wrap",
+      <div style={{
+        background: "rgba(0,0,0,0.15)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        padding: "32px",
+        borderRadius: "20px",
         marginBottom: "40px",
-        marginTop: "16px",
-        textShadow: "0 2px 16px rgba(0,0,0,0.8)",
+        border: "1px solid rgba(255,255,255,0.03)",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.4)"
       }}>
-        {prayer.content}
+        {prayer.content.split('\n').filter(p => p.trim() !== "").map((paragraph, i) => (
+          <p key={i} className="playfair anim-p" style={{
+            color: "rgba(255,255,255,0.9)",
+            fontSize: "1.25rem",
+            lineHeight: 1.85,
+            marginBottom: "1.2rem",
+            textShadow: "0 2px 10px rgba(0,0,0,0.9)",
+            opacity: 0, // start invisible for GSAP
+          }}>
+            {paragraph}
+          </p>
+        ))}
       </div>
 
       {/* Audio Player */}
       {prayer.audioPath ? (
-        <div style={{
+        <div className="anim-audio" style={{
           background: "rgba(0,0,0,0.45)",
           backdropFilter: "blur(16px)",
           borderRadius: "20px",
           padding: "20px 24px",
           border: "1px solid rgba(255,255,255,0.1)",
+          opacity: 0, // start invisible for GSAP
         }}>
           <audio ref={audioRef} src={prayer.audioPath} preload="metadata" />
 
