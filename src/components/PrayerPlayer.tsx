@@ -92,18 +92,14 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
       </h1>
 
       {/* Transcript */}
-      <div style={{
-        color: "rgba(255,255,255,0.82)",
-        fontSize: "1.05rem",
+      <div className="playfair" style={{
+        color: "rgba(255,255,255,0.9)",
+        fontSize: "1.25rem",
         lineHeight: 1.85,
         whiteSpace: "pre-wrap",
-        marginBottom: "28px",
-        padding: "20px",
-        background: "rgba(0,0,0,0.35)",
-        borderRadius: "12px",
-        backdropFilter: "blur(8px)",
-        maxHeight: "35vh",
-        overflowY: "auto",
+        marginBottom: "40px",
+        marginTop: "16px",
+        textShadow: "0 2px 16px rgba(0,0,0,0.8)",
       }}>
         {prayer.content}
       </div>
