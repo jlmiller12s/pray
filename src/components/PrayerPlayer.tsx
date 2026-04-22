@@ -150,15 +150,10 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
             letterSpacing: "0.04em",
             wordSpacing: "0.15em",
           }}>
-            {paragraph.split(' ').map((word, wordIndex) => (
-              <span
-                key={wordIndex}
-                className="hover-word"
-                style={{ whiteSpace: "pre" }}
-              >
-                {word + (wordIndex < paragraph.split(' ').length - 1 ? ' ' : '')}
-              </span>
-            ))}
+            {paragraph.split(' ').map((word, wordIndex, arr) => [
+              <span key={`w-${wordIndex}`} className="hover-word">{word}</span>,
+              wordIndex < arr.length - 1 ? " " : ""
+            ])}
           </p>
         ))}
       </div>
