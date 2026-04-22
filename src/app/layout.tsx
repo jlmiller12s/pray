@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Oswald } from "next/font/google";
+import { Inter, Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -12,10 +12,10 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-const oswald = Oswald({
-  variable: "--font-oswald",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} ${oswald.variable}`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
       <body>{children}</body>
     </html>
   );

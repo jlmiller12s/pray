@@ -138,17 +138,17 @@ export default function PrayerPlayer({ prayer, dateLabel }: { prayer: Prayer; da
         boxShadow: "0 12px 40px rgba(0,0,0,0.4)"
       }}>
         {prayer.content.split('\n').filter(p => p.trim() !== "").map((paragraph, i) => (
-        <p key={i} className="playfair anim-p" style={{
-            color: "rgba(255,255,255,0.65)",
-            fontSize: "1.2rem",
-            lineHeight: 1.85,
-            marginBottom: "1.2rem",
+        <p key={i} className="anim-p" style={{
+            color: "rgba(255,255,255,0.75)",
+            fontSize: "clamp(1.5rem, 4vw, 2rem)",
+            lineHeight: 1.25,
+            marginBottom: "1.5rem",
             textShadow: "0 2px 10px rgba(0,0,0,0.9)",
             opacity: 0,
-            fontFamily: "var(--font-oswald), sans-serif",
-            fontWeight: 300,
-            letterSpacing: "0.04em",
-            wordSpacing: "0.15em",
+            fontFamily: "var(--font-poppins), sans-serif",
+            fontWeight: 700,
+            letterSpacing: "-0.015em",
+            wordSpacing: "normal",
           }}>
             {paragraph.split(' ').map((word, wordIndex, arr) => [
               <span key={`w-${wordIndex}`} className="hover-word">{word}</span>,
