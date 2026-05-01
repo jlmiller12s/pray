@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { del } from "@vercel/blob";
+import webpush from "web-push";
 
 async function verifyAdmin() {
   const session = await getServerSession(authOptions);
@@ -24,6 +25,46 @@ export async function createPrayer(data: { title: string; content: string; dateP
       audioPath: data.audioPath ?? null,
     }
   });
+
+  // Trigger push notifications
+  try {
+    const subscriptions = await prisma.pushSubscription.findMany();
+    if (subscriptions.length > 0) {
+      webpush.setVapidDetails(
+        "mailto:admin@example.com",
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+        process.env.VAPID_PRIVATE_KEY!
+      );
+
+      const payload = JSON.stringify({
+        title: "New Daily Prayer",
+        body: data.title,
+        url: "/",
+      });
+
+      const notifications = subscriptions.map(async (sub) => {
+        try {
+          await webpush.sendNotification(
+            {
+              endpoint: sub.endpoint,
+              keys: { p256dh: sub.p256dh, auth: sub.auth },
+            },
+            payload
+          );
+        } catch (err: any) {
+          if (err.statusCode === 410 || err.statusCode === 404) {
+            await prisma.pushSubscription.delete({ where: { endpoint: sub.endpoint } });
+          } else {
+            console.error("Error sending push to", sub.endpoint, err);
+          }
+        }
+      });
+      await Promise.all(notifications);
+    }
+  } catch (err) {
+    console.error("Failed to process push notifications:", err);
+  }
+
   revalidatePath("/");
   revalidatePath("/admin");
   return { success: true, prayer };

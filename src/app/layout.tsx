@@ -28,6 +28,10 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
+import PushNotificationManager from "@/components/PushNotificationManager";
+
+import InstallPrompt from "@/components/InstallPrompt";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,7 +39,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${poppins.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <PushNotificationManager />
+        <InstallPrompt />
+      </body>
     </html>
   );
 }
