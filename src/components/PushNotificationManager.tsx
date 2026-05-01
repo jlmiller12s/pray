@@ -44,10 +44,24 @@ export default function PushNotificationManager() {
   async function subscribeToPush() {
     setIsLoading(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
+      // On mobile browsers the SW may not have activated yet — wait with a timeout
+      let registration: ServiceWorkerRegistration | null = null;
+      try {
+        registration = await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Service Worker timeout")), 8000)
+          ),
+        ]) as ServiceWorkerRegistration;
+      } catch {
+        throw new Error("Service Worker is not ready. Please try refreshing the page.");
+      }
 
-      // Ask for permission explicitly first if not already granted
+      // Ask for permission explicitly first
       const permission = await Notification.requestPermission();
+      if (permission === "denied") {
+        throw new Error("Notification permission was denied. Please enable notifications in your device settings.");
+      }
       if (permission !== "granted") {
         throw new Error("Permission not granted for Notification");
       }
@@ -64,18 +78,19 @@ export default function PushNotificationManager() {
         applicationServerKey: convertedVapidKey,
       });
 
-      await fetch("/api/push/subscribe", {
+      const res = await fetch("/api/push/subscribe", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(subscription),
       });
 
+      if (!res.ok) throw new Error("Failed to save subscription to server.");
+
       setIsSubscribed(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to subscribe to push notifications", err);
-      alert("Failed to enable notifications. Please make sure they are allowed in your browser settings.");
+      const message = err?.message || "An unknown error occurred.";
+      alert(`Could not enable notifications: ${message}`);
     } finally {
       setIsLoading(false);
     }

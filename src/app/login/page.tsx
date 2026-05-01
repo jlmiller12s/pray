@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -139,6 +140,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      <InstallPrompt />
     </div>
   );
 }
